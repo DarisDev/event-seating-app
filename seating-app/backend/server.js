@@ -4,7 +4,8 @@ const cors = require('cors');
 const { initDatabase } = require('./db/database');
 const guestsRouter = require('./routes/guests');
 
-const PORT = 3001;
+const PORT = Number(process.env.PORT) || 3001;
+const HOST = process.env.HOST || '0.0.0.0';
 const publicDir = path.join(__dirname, '..', 'frontend', 'public');
 
 async function main() {
@@ -16,8 +17,8 @@ async function main() {
   app.use(express.static(publicDir));
   app.use('/api/guests', guestsRouter);
 
-  app.listen(PORT, () => {
-    console.log(`Seating app server listening on http://localhost:${PORT}`);
+  app.listen(PORT, HOST, () => {
+    console.log(`Seating app server listening on http://${HOST}:${PORT}`);
   });
 }
 
