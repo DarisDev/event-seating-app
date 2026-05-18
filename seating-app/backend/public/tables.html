@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f1117" />
+    <title>Tables — Seating</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --surface: #1a1d27;
+        --surface-raised: #232733;
+        --border: #2e3444;
+        --text: #f0f2f7;
+        --text-muted: #9aa3b5;
+        --accent: #6c9eff;
+        --accent-dim: #4a7ad4;
+        --danger: #f07178;
+        --radius: 14px;
+        --tap: 48px;
+        --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        font-family: var(--font);
+        font-size: 17px;
+        line-height: 1.45;
+        color: var(--text);
+        background: var(--bg);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: env(safe-area-inset-top) 1rem env(safe-area-inset-bottom);
+      }
+
+      header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.25rem 0 0.75rem;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .brand p {
+        margin: 0.35rem 0 0;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+      }
+
+      .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        justify-content: flex-end;
+      }
+
+      .nav-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 0 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-decoration: none;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        transition: color 0.15s, border-color 0.15s, background 0.15s;
+      }
+
+      .nav-link:hover,
+      .nav-link:focus-visible {
+        color: var(--text);
+        border-color: var(--accent-dim);
+        background: var(--surface-raised);
+        outline: none;
+      }
+
+      .summary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.25rem;
+        padding: 0 0 1rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+      }
+
+      .summary strong {
+        color: var(--text);
+      }
+
+      .table-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.85rem;
+      }
+
+      @media (min-width: 400px) {
+        .table-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (min-width: 700px) {
+        .table-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      @media (min-width: 960px) {
+        .table-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      .table-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 6rem;
+      }
+
+      .table-card.empty {
+        opacity: 0.65;
+      }
+
+      .table-card.posht {
+        border-color: var(--accent-dim);
+        grid-column: 1 / -1;
+      }
+
+      @media (min-width: 700px) {
+        .table-card.posht {
+          grid-column: span 2;
+        }
+      }
+
+      @media (min-width: 960px) {
+        .table-card.posht {
+          grid-column: span 2;
+        }
+      }
+
+      .table-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background: var(--surface-raised);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .table-card.posht .table-card-header {
+        background: rgba(108, 158, 255, 0.12);
+      }
+
+      .table-title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .table-count {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        background: var(--bg);
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+      }
+
+      .table-card.posht .table-count {
+        color: var(--accent);
+      }
+
+      .guest-list {
+        list-style: none;
+        margin: 0;
+        padding: 0.5rem 0;
+        flex: 1;
+      }
+
+      .guest-list li {
+        padding: 0.4rem 1rem;
+        font-size: 0.95rem;
+        word-break: break-word;
+        border-bottom: 1px solid transparent;
+      }
+
+      .guest-list li:nth-child(odd) {
+        background: rgba(0, 0, 0, 0.12);
+      }
+
+      .guest-list li.empty-slot {
+        padding: 1rem;
+        text-align: center;
+        color: var(--text-muted);
+        font-style: italic;
+        font-size: 0.9rem;
+        background: transparent;
+      }
+
+      .state-panel {
+        padding: 3rem 1rem;
+        text-align: center;
+        color: var(--text-muted);
+      }
+
+      .state-panel.error {
+        color: var(--danger);
+      }
+
+      .refresh-hint {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin: 0 0 1rem;
+      }
+
+      @media (min-width: 480px) {
+        .page {
+          padding-left: 1.5rem;
+          padding-right: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div class="brand">
+          <h1>Seating by table</h1>
+          <p>All guests grouped by table</p>
+        </div>
+        <nav class="nav-links" aria-label="Site navigation">
+          <a class="nav-link" href="/">Search</a>
+          <a class="nav-link" href="/admin.html">Admin</a>
+        </nav>
+      </header>
+
+      <p class="refresh-hint">Reload the page after admin changes to see updates.</p>
+      <div class="summary" id="summary" hidden></div>
+      <div id="content">
+        <div class="state-panel">Loading tables…</div>
+      </div>
+    </div>
+
+    <script>
+      const API = "/api/guests";
+
+      const TABLE_ORDER = [
+        "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+        "11", "12", "13", "14", "15", "16", "17", "Posht",
+      ];
+
+      const content = document.getElementById("content");
+      const summary = document.getElementById("summary");
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function normalizeKey(name) {
+        return String(name).trim();
+      }
+
+      function isPosht(name) {
+        return normalizeKey(name).toLowerCase() === "posht";
+      }
+
+      function tableSortKey(name) {
+        const key = normalizeKey(name);
+        if (isPosht(key)) return { kind: "posht", num: 9999 };
+        const num = Number(key);
+        if (!Number.isNaN(num) && String(num) === key) {
+          return { kind: "num", num };
+        }
+        return { kind: "other", num: 5000, label: key };
+      }
+
+      function compareTableNames(a, b) {
+        const ka = tableSortKey(a);
+        const kb = tableSortKey(b);
+        if (ka.kind === "posht" && kb.kind !== "posht") return 1;
+        if (kb.kind === "posht" && ka.kind !== "posht") return -1;
+        if (ka.kind === "num" && kb.kind === "num") return ka.num - kb.num;
+        if (ka.kind === "num") return -1;
+        if (kb.kind === "num") return 1;
+        return ka.label.localeCompare(kb.label);
+      }
+
+      function displayTableLabel(name) {
+        const key = normalizeKey(name);
+        if (isPosht(key)) return "Posht";
+        const num = Number(key);
+        if (!Number.isNaN(num) && String(num) === key) {
+          return `Table ${num}`;
+        }
+        return `Table ${key}`;
+      }
+
+      function buildTableList(guestsByTable) {
+        const seen = new Set();
+        const list = [];
+
+        for (const t of TABLE_ORDER) {
+          const key = TABLE_ORDER.includes(t) ? t : t;
+          const matchKey = Object.keys(guestsByTable).find(
+            (k) => normalizeKey(k).toLowerCase() === normalizeKey(t).toLowerCase()
+          );
+          if (matchKey) {
+            list.push(matchKey);
+            seen.add(normalizeKey(matchKey).toLowerCase());
+          } else {
+            list.push(t);
+            seen.add(normalizeKey(t).toLowerCase());
+          }
+        }
+
+        const extras = Object.keys(guestsByTable)
+          .filter((k) => !seen.has(normalizeKey(k).toLowerCase()))
+          .sort(compareTableNames);
+
+        return list.concat(extras);
+      }
+
+      function render(guests) {
+        const guestsByTable = {};
+
+        for (const guest of guests) {
+          const key = normalizeKey(guest.tableName);
+          if (!guestsByTable[key]) guestsByTable[key] = [];
+          guestsByTable[key].push(guest);
+        }
+
+        for (const names of Object.values(guestsByTable)) {
+          names.sort((a, b) =>
+            a.fullName.localeCompare(b.fullName, undefined, { sensitivity: "base" })
+          );
+        }
+
+        const tableNames = buildTableList(guestsByTable);
+        const totalGuests = guests.length;
+        const filledTables = tableNames.filter(
+          (t) => (guestsByTable[normalizeKey(t)] || guestsByTable[t] || []).length > 0
+        ).length;
+
+        summary.hidden = false;
+        summary.innerHTML = `
+          <span><strong>${totalGuests}</strong> guests</span>
+          <span><strong>${filledTables}</strong> tables with guests</span>
+          <span><strong>${tableNames.length}</strong> table slots shown</span>
+        `;
+
+        const cards = tableNames
+          .map((tableName) => {
+            const lookupKey =
+              Object.keys(guestsByTable).find(
+                (k) =>
+                  normalizeKey(k).toLowerCase() ===
+                  normalizeKey(tableName).toLowerCase()
+              ) || tableName;
+            const tableGuests = guestsByTable[lookupKey] || [];
+            const posht = isPosht(tableName);
+            const empty = tableGuests.length === 0;
+
+            const listItems = empty
+              ? '<li class="empty-slot">No guests</li>'
+              : tableGuests
+                  .map((g) => {
+                    const seat =
+                      g.seatNumber !== null && g.seatNumber !== undefined
+                        ? `<span style="color:var(--text-muted);font-size:0.85em"> · seat ${escapeHtml(g.seatNumber)}</span>`
+                        : "";
+                    return `<li>${escapeHtml(g.fullName)}${seat}</li>`;
+                  })
+                  .join("");
+
+            return `
+              <article class="table-card${empty ? " empty" : ""}${posht ? " posht" : ""}">
+                <header class="table-card-header">
+                  <h2 class="table-title">${escapeHtml(displayTableLabel(tableName))}</h2>
+                  <span class="table-count">${tableGuests.length}</span>
+                </header>
+                <ul class="guest-list" role="list">${listItems}</ul>
+              </article>
+            `;
+          })
+          .join("");
+
+        content.innerHTML = `<div class="table-grid">${cards}</div>`;
+      }
+
+      async function load() {
+        try {
+          const res = await fetch(API);
+          if (!res.ok) throw new Error(`Could not load guests (${res.status})`);
+          const guests = await res.json();
+          if (!Array.isArray(guests)) throw new Error("Invalid response");
+          render(guests);
+        } catch (err) {
+          summary.hidden = true;
+          content.innerHTML = `
+            <div class="state-panel error">
+              <p>${escapeHtml(err.message)}</p>
+              <p>Make sure the server is running and try again.</p>
+            </div>
+          `;
+        }
+      }
+
+      load();
+    </script>
+  </body>
+</html>

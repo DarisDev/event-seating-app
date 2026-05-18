@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f1117" />
+    <title>Admin — Seating</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --surface: #1a1d27;
+        --surface-raised: #232733;
+        --border: #2e3444;
+        --text: #f0f2f7;
+        --text-muted: #9aa3b5;
+        --accent: #6c9eff;
+        --accent-dim: #4a7ad4;
+        --success: #7ee787;
+        --danger: #f07178;
+        --radius: 14px;
+        --tap: 48px;
+        --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        font-family: var(--font);
+        font-size: 17px;
+        line-height: 1.45;
+        color: var(--text);
+        background: var(--bg);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .page {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: env(safe-area-inset-top) 1rem calc(5rem + env(safe-area-inset-bottom));
+      }
+
+      header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.25rem 0 1rem;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .brand p {
+        margin: 0.35rem 0 0;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+      }
+
+      .nav-links {
+        flex-shrink: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        justify-content: flex-end;
+      }
+
+      .nav-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: var(--tap);
+        padding: 0 0.85rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-decoration: none;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        transition: color 0.15s, border-color 0.15s, background 0.15s;
+      }
+
+      .nav-link:hover,
+      .nav-link:focus-visible {
+        color: var(--text);
+        border-color: var(--accent-dim);
+        background: var(--surface-raised);
+        outline: none;
+      }
+
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.15rem;
+        margin-bottom: 1rem;
+      }
+
+      .panel h2 {
+        margin: 0 0 1rem;
+        font-size: 1.05rem;
+        font-weight: 600;
+      }
+
+      .form-grid {
+        display: grid;
+        gap: 0.85rem;
+      }
+
+      @media (min-width: 560px) {
+        .form-grid.cols-3 {
+          grid-template-columns: 1fr 1fr minmax(7rem, 0.6fr);
+        }
+
+        .form-grid.cols-3 .form-actions {
+          grid-column: 1 / -1;
+        }
+      }
+
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+      }
+
+      input[type="text"],
+      input[type="number"],
+      input[type="file"] {
+        font: inherit;
+        font-size: 1rem;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: normal;
+        color: var(--text);
+        background: var(--bg);
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        padding: 0.75rem 0.9rem;
+        min-height: var(--tap);
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+      }
+
+      input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(108, 158, 255, 0.2);
+      }
+
+      input[type="file"] {
+        padding: 0.65rem;
+        font-size: 0.9rem;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: var(--tap);
+        padding: 0 1.1rem;
+        font: inherit;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s, opacity 0.15s;
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-primary {
+        color: #0f1117;
+        background: var(--accent);
+      }
+
+      .btn-primary:hover:not(:disabled),
+      .btn-primary:focus-visible:not(:disabled) {
+        background: #8ab4ff;
+        outline: none;
+      }
+
+      .btn-ghost {
+        color: var(--text-muted);
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+      }
+
+      .btn-ghost:hover:not(:disabled),
+      .btn-ghost:focus-visible:not(:disabled) {
+        color: var(--text);
+        border-color: var(--accent-dim);
+        outline: none;
+      }
+
+      .btn-danger {
+        color: var(--danger);
+        background: rgba(240, 113, 120, 0.12);
+        border: 1px solid rgba(240, 113, 120, 0.3);
+      }
+
+      .btn-danger:hover:not(:disabled),
+      .btn-danger:focus-visible:not(:disabled) {
+        background: rgba(240, 113, 120, 0.22);
+        outline: none;
+      }
+
+      .btn-sm {
+        min-height: 40px;
+        padding: 0 0.75rem;
+        font-size: 0.875rem;
+      }
+
+      .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+      }
+
+      .csv-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+
+      @media (min-width: 560px) {
+        .csv-row {
+          flex-direction: row;
+          align-items: flex-end;
+        }
+
+        .csv-row label {
+          flex: 1;
+        }
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -0.25rem;
+        padding: 0 0.25rem;
+      }
+
+      .guest-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
+
+      .guest-table th,
+      .guest-table td {
+        padding: 0.75rem 0.5rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+      }
+
+      .guest-table th {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+      }
+
+      .guest-table tbody tr:last-child td {
+        border-bottom: none;
+      }
+
+      .guest-name {
+        font-weight: 600;
+        word-break: break-word;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+
+      .empty-table {
+        padding: 2rem 1rem;
+        text-align: center;
+        color: var(--text-muted);
+      }
+
+      .loading-row td {
+        text-align: center;
+        color: var(--text-muted);
+        padding: 2rem;
+      }
+
+      @media (max-width: 640px) {
+        .guest-table thead {
+          display: none;
+        }
+
+        .guest-table tbody tr {
+          display: block;
+          padding: 0.85rem 0;
+          border-bottom: 1px solid var(--border);
+        }
+
+        .guest-table tbody tr:last-child {
+          border-bottom: none;
+        }
+
+        .guest-table td {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
+          padding: 0.4rem 0;
+          border: none;
+        }
+
+        .guest-table td::before {
+          content: attr(data-label);
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--text-muted);
+          flex-shrink: 0;
+        }
+
+        .guest-table td.actions-cell {
+          display: block;
+          padding-top: 0.65rem;
+        }
+
+        .guest-table td.actions-cell::before {
+          display: none;
+        }
+
+        .guest-table td.actions-cell .actions {
+          justify-content: flex-end;
+        }
+      }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: none;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 0;
+        background: rgba(0, 0, 0, 0.65);
+      }
+
+      .modal-overlay.open {
+        display: flex;
+      }
+
+      @media (min-width: 480px) {
+        .modal-overlay {
+          align-items: center;
+          padding: 1rem;
+        }
+      }
+
+      .modal {
+        width: 100%;
+        max-width: 440px;
+        max-height: 90dvh;
+        overflow-y: auto;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius) var(--radius) 0 0;
+        padding: 1.25rem;
+      }
+
+      @media (min-width: 480px) {
+        .modal {
+          border-radius: var(--radius);
+        }
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.15rem;
+      }
+
+      .modal-header h2 {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+
+      .modal-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--tap);
+        height: var(--tap);
+        padding: 0;
+        border: none;
+        border-radius: 10px;
+        background: var(--surface-raised);
+        color: var(--text-muted);
+        cursor: pointer;
+      }
+
+      .modal-close:hover,
+      .modal-close:focus-visible {
+        color: var(--text);
+        outline: none;
+      }
+
+      .modal .form-grid {
+        margin-bottom: 1rem;
+      }
+
+      /* Toast */
+      .toast {
+        position: fixed;
+        left: 1rem;
+        right: 1rem;
+        bottom: calc(1rem + env(safe-area-inset-bottom));
+        z-index: 200;
+        max-width: 520px;
+        margin: 0 auto;
+        padding: 0.9rem 1.1rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: var(--surface-raised);
+        color: var(--text);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+        transform: translateY(120%);
+        opacity: 0;
+        transition: transform 0.25s ease, opacity 0.25s ease;
+        pointer-events: none;
+      }
+
+      .toast.visible {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      .toast.success {
+        border-color: rgba(126, 231, 135, 0.4);
+        color: var(--success);
+      }
+
+      .toast.error {
+        border-color: rgba(240, 113, 120, 0.4);
+        color: var(--danger);
+      }
+
+      @media (min-width: 480px) {
+        .page {
+          padding-left: 1.5rem;
+          padding-right: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div class="brand">
+          <h1>Guest Admin</h1>
+          <p>Manage seating for the event</p>
+        </div>
+        <nav class="nav-links" aria-label="Site navigation">
+          <a class="nav-link" href="/">Search</a>
+          <a class="nav-link" href="/tables.html">Tables</a>
+        </nav>
+      </header>
+
+      <section class="panel" aria-labelledby="add-heading">
+        <h2 id="add-heading">Add guest</h2>
+        <form id="add-form" class="form-grid cols-3">
+          <label>
+            Full name
+            <input type="text" name="fullName" required autocomplete="name" />
+          </label>
+          <label>
+            Table
+            <input type="text" name="tableName" required />
+          </label>
+          <label>
+            Seat <span style="font-weight:400;text-transform:none">(optional)</span>
+            <input type="number" name="seatNumber" min="0" step="1" placeholder="—" />
+          </label>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Add guest</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="csv-heading">
+        <h2 id="csv-heading">Import CSV</h2>
+        <p style="margin:0 0 0.85rem;font-size:0.9rem;color:var(--text-muted)">
+          Format: <code style="color:var(--accent)">fullName,tableName,seatNumber</code> (no header)
+        </p>
+        <form id="csv-form" class="csv-row">
+          <label>
+            CSV file
+            <input type="file" name="file" accept=".csv,text/csv" required />
+          </label>
+          <button type="submit" class="btn btn-primary">Upload CSV</button>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="list-heading">
+        <h2 id="list-heading">All guests <span id="guest-count" style="color:var(--text-muted);font-weight:400"></span></h2>
+        <div class="table-wrap">
+          <table class="guest-table" aria-label="Guest list">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Table</th>
+                <th>Seat</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="guest-tbody">
+              <tr class="loading-row">
+                <td colspan="4">Loading guests…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- Edit modal -->
+    <div class="modal-overlay" id="edit-modal" role="dialog" aria-modal="true" aria-labelledby="edit-title" hidden>
+      <div class="modal">
+        <div class="modal-header">
+          <h2 id="edit-title">Edit guest</h2>
+          <button type="button" class="modal-close" id="edit-close" aria-label="Close">✕</button>
+        </div>
+        <form id="edit-form" class="form-grid">
+          <input type="hidden" name="id" id="edit-id" />
+          <label>
+            Full name
+            <input type="text" name="fullName" id="edit-fullName" required />
+          </label>
+          <label>
+            Table
+            <input type="text" name="tableName" id="edit-tableName" required />
+          </label>
+          <label>
+            Seat <span style="font-weight:400;text-transform:none">(optional)</span>
+            <input type="number" name="seatNumber" id="edit-seatNumber" min="0" step="1" placeholder="—" />
+          </label>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save changes</button>
+            <button type="button" class="btn btn-ghost" id="edit-cancel">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      const API = "/api/guests";
+
+      const tbody = document.getElementById("guest-tbody");
+      const guestCount = document.getElementById("guest-count");
+      const addForm = document.getElementById("add-form");
+      const csvForm = document.getElementById("csv-form");
+      const editModal = document.getElementById("edit-modal");
+      const editForm = document.getElementById("edit-form");
+      const toast = document.getElementById("toast");
+
+      let toastTimer = null;
+      let guests = [];
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function formatSeat(seatNumber) {
+        if (seatNumber === null || seatNumber === undefined || seatNumber === "") {
+          return "—";
+        }
+        return String(seatNumber);
+      }
+
+      function showFeedback(type, message) {
+        clearTimeout(toastTimer);
+        toast.textContent = message;
+        toast.className = `toast visible ${type}`;
+        toastTimer = setTimeout(() => {
+          toast.classList.remove("visible");
+        }, 4500);
+      }
+
+      async function apiJson(url, options = {}) {
+        const res = await fetch(url, options);
+        let data = null;
+        const text = await res.text();
+        if (text) {
+          try {
+            data = JSON.parse(text);
+          } catch {
+            data = { error: text };
+          }
+        }
+        if (!res.ok) {
+          const err = new Error(data?.error || `Request failed (${res.status})`);
+          err.status = res.status;
+          throw err;
+        }
+        return data;
+      }
+
+      function buildSeatBody(seatInput) {
+        const raw = seatInput.trim();
+        if (!raw) return { seatNumber: null };
+        const n = Number(raw);
+        if (!Number.isInteger(n) || n < 0) {
+          throw new Error("Seat must be a non-negative whole number");
+        }
+        return { seatNumber: n };
+      }
+
+      function renderTable() {
+        guestCount.textContent = guests.length ? `(${guests.length})` : "";
+
+        if (guests.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="4" class="empty-table">No guests yet. Add one above or import a CSV.</td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = guests
+          .map((g) => {
+            const seat = formatSeat(g.seatNumber);
+            return `
+              <tr data-id="${g.id}">
+                <td data-label="Name" class="guest-name">${escapeHtml(g.fullName)}</td>
+                <td data-label="Table">${escapeHtml(g.tableName)}</td>
+                <td data-label="Seat">${escapeHtml(seat)}</td>
+                <td data-label="Actions" class="actions-cell">
+                  <div class="actions">
+                    <button type="button" class="btn btn-ghost btn-sm btn-edit" data-id="${g.id}">Edit</button>
+                    <button type="button" class="btn btn-danger btn-sm btn-delete" data-id="${g.id}">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          })
+          .join("");
+      }
+
+      async function loadGuests() {
+        tbody.innerHTML = `
+          <tr class="loading-row"><td colspan="4">Loading guests…</td></tr>
+        `;
+        try {
+          guests = await apiJson(API);
+          if (!Array.isArray(guests)) guests = [];
+          renderTable();
+        } catch (err) {
+          tbody.innerHTML = `
+            <tr><td colspan="4" class="empty-table">Could not load guests.</td></tr>
+          `;
+          showFeedback("error", err.message);
+        }
+      }
+
+      addForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const fd = new FormData(addForm);
+        const fullName = fd.get("fullName").toString().trim();
+        const tableName = fd.get("tableName").toString().trim();
+        const seatRaw = fd.get("seatNumber").toString().trim();
+
+        if (!fullName || !tableName) {
+          showFeedback("error", "Name and table are required.");
+          return;
+        }
+
+        const body = { fullName, tableName };
+        try {
+          Object.assign(body, buildSeatBody(seatRaw));
+        } catch (err) {
+          showFeedback("error", err.message);
+          return;
+        }
+
+        const btn = addForm.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        try {
+          await apiJson(API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          addForm.reset();
+          showFeedback("success", `Added ${fullName}.`);
+          await loadGuests();
+        } catch (err) {
+          showFeedback("error", err.message);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+
+      csvForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const fileInput = csvForm.querySelector('input[type="file"]');
+        if (!fileInput.files?.length) {
+          showFeedback("error", "Choose a CSV file first.");
+          return;
+        }
+
+        const fd = new FormData();
+        fd.append("file", fileInput.files[0]);
+        const btn = csvForm.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        try {
+          const result = await apiJson(`${API}/import-csv`, {
+            method: "POST",
+            body: fd,
+          });
+          csvForm.reset();
+          showFeedback(
+            "success",
+            `Import done: ${result.inserted} added, ${result.skipped} skipped.`
+          );
+          await loadGuests();
+        } catch (err) {
+          showFeedback("error", err.message);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+
+      tbody.addEventListener("click", async (e) => {
+        const editBtn = e.target.closest(".btn-edit");
+        const deleteBtn = e.target.closest(".btn-delete");
+
+        if (editBtn) {
+          const id = Number(editBtn.dataset.id);
+          const guest = guests.find((g) => g.id === id);
+          if (guest) openEditModal(guest);
+          return;
+        }
+
+        if (deleteBtn) {
+          const id = deleteBtn.dataset.id;
+          const guest = guests.find((g) => String(g.id) === id);
+          if (!guest) return;
+          if (!confirm(`Delete ${guest.fullName}?`)) return;
+
+          deleteBtn.disabled = true;
+          try {
+            await apiJson(`${API}/${id}`, { method: "DELETE" });
+            showFeedback("success", `Deleted ${guest.fullName}.`);
+            await loadGuests();
+          } catch (err) {
+            showFeedback("error", err.message);
+            deleteBtn.disabled = false;
+          }
+        }
+      });
+
+      function openEditModal(guest) {
+        document.getElementById("edit-id").value = guest.id;
+        document.getElementById("edit-fullName").value = guest.fullName;
+        document.getElementById("edit-tableName").value = guest.tableName;
+        document.getElementById("edit-seatNumber").value =
+          guest.seatNumber === null || guest.seatNumber === undefined
+            ? ""
+            : guest.seatNumber;
+        editModal.hidden = false;
+        editModal.classList.add("open");
+        document.getElementById("edit-fullName").focus();
+      }
+
+      function closeEditModal() {
+        editModal.classList.remove("open");
+        editModal.hidden = true;
+        editForm.reset();
+      }
+
+      document.getElementById("edit-close").addEventListener("click", closeEditModal);
+      document.getElementById("edit-cancel").addEventListener("click", closeEditModal);
+      editModal.addEventListener("click", (e) => {
+        if (e.target === editModal) closeEditModal();
+      });
+
+      editForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const id = document.getElementById("edit-id").value;
+        const fullName = document.getElementById("edit-fullName").value.trim();
+        const tableName = document.getElementById("edit-tableName").value.trim();
+        const seatRaw = document.getElementById("edit-seatNumber").value.trim();
+
+        if (!fullName || !tableName) {
+          showFeedback("error", "Name and table are required.");
+          return;
+        }
+
+        const body = { fullName, tableName };
+        try {
+          Object.assign(body, buildSeatBody(seatRaw));
+        } catch (err) {
+          showFeedback("error", err.message);
+          return;
+        }
+
+        const btn = editForm.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        try {
+          await apiJson(`${API}/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          closeEditModal();
+          showFeedback("success", `Updated ${fullName}.`);
+          await loadGuests();
+        } catch (err) {
+          showFeedback("error", err.message);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && editModal.classList.contains("open")) {
+          closeEditModal();
+        }
+      });
+
+      loadGuests();
+    </script>
+  </body>
+</html>

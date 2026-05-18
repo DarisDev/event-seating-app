@@ -8,14 +8,27 @@ const DB_FILE =
 
 let db = null;
 
+function ensureDbDirectory() {
+  const dir = path.dirname(DB_FILE);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+}
+
 /**
  * Load sql.js, open or create seating.db, ensure schema.
  */
 async function initDatabase() {
-  const SQL = await initSqlJs({
-    locateFile: (file) =>
-      path.join(__dirname, '..', 'node_modules', 'sql.js', 'dist', file),
-  });
+  ensureDbDirectory();
+
+  let wasmPath;
+  try {
+    wasmPath = require.resolve('sql.js/dist/sql-wasm.wasm');
+  } catch {
+    wasmPath = path.join(__dirname, '..', 'node_modules', 'sql.js', 'dist', 'sql-wasm.wasm');
+  }
+  const wasmBinary = fs.readFileSync(wasmPath);
+  const SQL = await initSqlJs({ wasmBinary });
 
   if (fs.existsSync(DB_FILE)) {
     const fileBuffer = fs.readFileSync(DB_FILE);
@@ -48,6 +61,7 @@ function getDb() {
 }
 
 function persist() {
+  ensureDbDirectory();
   const data = getDb().export();
   fs.writeFileSync(DB_FILE, Buffer.from(data));
 }
