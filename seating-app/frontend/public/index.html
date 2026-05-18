@@ -72,14 +72,20 @@
         color: var(--text-muted);
       }
 
-      .admin-link {
+      .nav-links {
         flex-shrink: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        justify-content: flex-end;
+      }
+
+      .nav-link {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-height: var(--tap);
-        min-width: var(--tap);
-        padding: 0 0.85rem;
+        min-height: 40px;
+        padding: 0 0.75rem;
         font-size: 0.875rem;
         font-weight: 500;
         color: var(--text-muted);
@@ -90,8 +96,8 @@
         transition: color 0.15s, border-color 0.15s, background 0.15s;
       }
 
-      .admin-link:hover,
-      .admin-link:focus-visible {
+      .nav-link:hover,
+      .nav-link:focus-visible {
         color: var(--text);
         border-color: var(--accent-dim);
         background: var(--surface-raised);
@@ -308,7 +314,10 @@
           <h1>Find Your Seat</h1>
           <p>Search by guest name</p>
         </div>
-        <a class="admin-link" href="/admin.html">Admin</a>
+        <nav class="nav-links" aria-label="Site navigation">
+          <a class="nav-link" href="/tables.html">Tables</a>
+          <a class="nav-link" href="/admin.html">Admin</a>
+        </nav>
       </header>
 
       <div class="search-wrap">

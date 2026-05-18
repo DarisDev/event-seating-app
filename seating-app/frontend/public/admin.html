@@ -70,8 +70,15 @@
         color: var(--text-muted);
       }
 
-      .nav-link {
+      .nav-links {
         flex-shrink: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        justify-content: flex-end;
+      }
+
+      .nav-link {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -482,7 +489,10 @@
           <h1>Guest Admin</h1>
           <p>Manage seating for the event</p>
         </div>
-        <a class="nav-link" href="/">Search</a>
+        <nav class="nav-links" aria-label="Site navigation">
+          <a class="nav-link" href="/">Search</a>
+          <a class="nav-link" href="/tables.html">Tables</a>
+        </nav>
       </header>
 
       <section class="panel" aria-labelledby="add-heading">
