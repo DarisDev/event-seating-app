@@ -5,8 +5,9 @@ const cors = require('cors');
 const { initDatabase } = require('./db/database');
 const guestsRouter = require('./routes/guests');
 
+// Railway must reach the process from outside the container — never bind to localhost.
 const PORT = Number(process.env.PORT) || 3001;
-const HOST = process.env.HOST || '0.0.0.0';
+const HOST = '0.0.0.0';
 
 function resolvePublicDir() {
   const candidates = [
@@ -45,9 +46,20 @@ async function main() {
   app.use('/api/guests', guestsRouter);
 
   app.listen(PORT, HOST, () => {
-    console.log(`Seating app server listening on port ${PORT}`);
+    console.log(`Seating app server listening on ${HOST}:${PORT}`);
+    console.log(`Health check: http://${HOST}:${PORT}/health`);
   });
 }
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception:', err);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled rejection:', err);
+  process.exit(1);
+});
 
 main().catch((err) => {
   console.error(err);
