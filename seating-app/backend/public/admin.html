@@ -516,6 +516,26 @@
         </form>
       </section>
 
+      <section class="panel" aria-labelledby="rename-heading">
+        <h2 id="rename-heading">Rename table</h2>
+        <p style="margin:0 0 0.85rem;font-size:0.9rem;color:var(--text-muted)">
+          Moves every guest from one table name to another.
+        </p>
+        <form id="rename-form" class="form-grid cols-3">
+          <label>
+            Current table name
+            <input type="text" name="from" required placeholder="e.g. 4" />
+          </label>
+          <label>
+            New table name
+            <input type="text" name="to" required placeholder="e.g. 18" />
+          </label>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Rename table</button>
+          </div>
+        </form>
+      </section>
+
       <section class="panel" aria-labelledby="csv-heading">
         <h2 id="csv-heading">Import CSV</h2>
         <p style="margin:0 0 0.85rem;font-size:0.9rem;color:var(--text-muted)">
@@ -589,6 +609,7 @@
       const tbody = document.getElementById("guest-tbody");
       const guestCount = document.getElementById("guest-count");
       const addForm = document.getElementById("add-form");
+      const renameForm = document.getElementById("rename-form");
       const csvForm = document.getElementById("csv-form");
       const editModal = document.getElementById("edit-modal");
       const editForm = document.getElementById("edit-form");
@@ -728,6 +749,38 @@
           });
           addForm.reset();
           showFeedback("success", `Added ${fullName}.`);
+          await loadGuests();
+        } catch (err) {
+          showFeedback("error", err.message);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+
+      renameForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const fd = new FormData(renameForm);
+        const from = fd.get("from").toString().trim();
+        const to = fd.get("to").toString().trim();
+
+        if (!from || !to) {
+          showFeedback("error", "Current and new table names are required.");
+          return;
+        }
+
+        const btn = renameForm.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        try {
+          const result = await apiJson(`${API}/rename-table`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ from, to }),
+          });
+          renameForm.reset();
+          showFeedback(
+            "success",
+            `Moved ${result.moved} guest${result.moved === 1 ? "" : "s"} from table "${from}" to "${to}".`
+          );
           await loadGuests();
         } catch (err) {
           showFeedback("error", err.message);
