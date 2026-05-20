@@ -517,21 +517,21 @@
       </section>
 
       <section class="panel" aria-labelledby="rename-heading">
-        <h2 id="rename-heading">Rename table</h2>
+        <h2 id="rename-heading">Swap tables</h2>
         <p style="margin:0 0 0.85rem;font-size:0.9rem;color:var(--text-muted)">
-          Moves every guest from one table name to another.
+          Swaps two table names. Guests on table A move to B, and guests on B move to A (nothing is combined).
         </p>
         <form id="rename-form" class="form-grid cols-3">
           <label>
-            Current table name
-            <input type="text" name="from" required placeholder="e.g. 4" />
+            Table A
+            <input type="text" name="from" required placeholder="e.g. 5" />
           </label>
           <label>
-            New table name
-            <input type="text" name="to" required placeholder="e.g. 18" />
+            Table B
+            <input type="text" name="to" required placeholder="e.g. 15" />
           </label>
           <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Rename table</button>
+            <button type="submit" class="btn btn-primary">Swap tables</button>
           </div>
         </form>
       </section>
@@ -779,7 +779,7 @@
           renameForm.reset();
           showFeedback(
             "success",
-            `Moved ${result.moved} guest${result.moved === 1 ? "" : "s"} from table "${from}" to "${to}".`
+            `Swapped tables "${from}" ↔ "${to}": ${result.fromCount} guest${result.fromCount === 1 ? "" : "s"} now on "${to}", ${result.toCount} guest${result.toCount === 1 ? "" : "s"} now on "${from}".`
           );
           await loadGuests();
         } catch (err) {

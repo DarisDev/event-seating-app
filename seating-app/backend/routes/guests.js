@@ -59,9 +59,6 @@ function ensureStmts() {
     countByTable: db.prepare(
       `SELECT COUNT(*) AS count FROM guests WHERE tableName = ?`
     ),
-    renameTable: db.prepare(
-      `UPDATE guests SET tableName = ? WHERE tableName = ?`
-    ),
   };
   return stmts;
 }
@@ -175,20 +172,38 @@ router.put('/rename-table', (req, res) => {
   if (!from || !to) {
     return res.status(400).json({ error: 'from and to are required' });
   }
+  if (from === to) {
+    return res.status(400).json({ error: 'from and to must be different' });
+  }
 
-  const { countByTable, renameTable } = ensureStmts();
+  const { countByTable } = ensureStmts();
 
   countByTable.bind([from]);
   countByTable.step();
-  const moved = countByTable.getAsObject().count;
+  const fromCount = countByTable.getAsObject().count;
   countByTable.reset();
 
-  renameTable.bind([to, from]);
-  renameTable.step();
-  renameTable.reset();
+  countByTable.bind([to]);
+  countByTable.step();
+  const toCount = countByTable.getAsObject().count;
+  countByTable.reset();
+
+  const db = getDb();
+  const temp = `__swap_${Date.now()}_${Math.random().toString(36).slice(2)}__`;
+
+  db.run('UPDATE guests SET tableName = ? WHERE tableName = ?', [temp, from]);
+  db.run('UPDATE guests SET tableName = ? WHERE tableName = ?', [from, to]);
+  db.run('UPDATE guests SET tableName = ? WHERE tableName = ?', [to, temp]);
+
   persistDb();
 
-  res.status(200).json({ moved, from, to });
+  res.status(200).json({
+    from,
+    to,
+    fromCount,
+    toCount,
+    swapped: true,
+  });
 });
 
 router.put('/:id', (req, res) => {
