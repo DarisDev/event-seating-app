@@ -56,6 +56,12 @@ function ensureStmts() {
     exportCsv: db.prepare(
       `SELECT fullName, tableName FROM guests ORDER BY tableName`
     ),
+    countByTable: db.prepare(
+      `SELECT COUNT(*) AS count FROM guests WHERE tableName = ?`
+    ),
+    renameTable: db.prepare(
+      `UPDATE guests SET tableName = ? WHERE tableName = ?`
+    ),
   };
   return stmts;
 }
@@ -160,6 +166,29 @@ router.post('/', (req, res) => {
   persistDb();
 
   res.status(201).json(guest);
+});
+
+router.put('/rename-table', (req, res) => {
+  const from = (req.body.from || '').trim();
+  const to = (req.body.to || '').trim();
+
+  if (!from || !to) {
+    return res.status(400).json({ error: 'from and to are required' });
+  }
+
+  const { countByTable, renameTable } = ensureStmts();
+
+  countByTable.bind([from]);
+  countByTable.step();
+  const moved = countByTable.getAsObject().count;
+  countByTable.reset();
+
+  renameTable.bind([to, from]);
+  renameTable.step();
+  renameTable.reset();
+  persistDb();
+
+  res.status(200).json({ moved, from, to });
 });
 
 router.put('/:id', (req, res) => {
