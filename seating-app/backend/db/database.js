@@ -2,9 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const initSqlJs = require('sql.js');
 
-const DB_FILE =
-  process.env.DATABASE_PATH ||
-  path.join(process.env.DATA_DIR || path.join(__dirname, '..'), 'seating.db');
+const DB_FILE = process.env.DATA_DIR
+  ? path.join(process.env.DATA_DIR, 'seating.db')
+  : path.join(__dirname, '..', 'seating.db');
 
 let db = null;
 
