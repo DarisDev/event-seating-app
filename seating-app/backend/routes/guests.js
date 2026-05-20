@@ -53,8 +53,19 @@ function ensureStmts() {
     ),
     delete: db.prepare(`DELETE FROM guests WHERE id = ?`),
     lastInsertId: db.prepare('SELECT last_insert_rowid() AS id'),
+    exportCsv: db.prepare(
+      `SELECT fullName, tableName FROM guests ORDER BY tableName`
+    ),
   };
   return stmts;
+}
+
+function escapeCsvField(value) {
+  const s = String(value);
+  if (/[",\n\r]/.test(s)) {
+    return `"${s.replace(/"/g, '""')}"`;
+  }
+  return s;
 }
 
 function lastInsertRowId() {
@@ -108,6 +119,21 @@ router.get('/search', (req, res) => {
   search.bind([`%${query}%`]);
   const guests = rowsFromStmt(search);
   res.status(200).json(guests);
+});
+
+router.get('/export-csv', (req, res) => {
+  const { exportCsv } = ensureStmts();
+  const rows = rowsFromStmt(exportCsv);
+  const csv = rows
+    .map(
+      (row) =>
+        `${escapeCsvField(row.fullName)},${escapeCsvField(row.tableName)}`
+    )
+    .join('\n');
+  const body = csv ? `${csv}\n` : '';
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename="guests.csv"');
+  res.status(200).send(body);
 });
 
 router.post('/', (req, res) => {
